@@ -1,5 +1,5 @@
 [project]
-name = "scraper_1000"
+name = "room_capacity_sensor"
 version = "0.1.0"
 dependencies = [
     "python-dotenv>=1.0.0",

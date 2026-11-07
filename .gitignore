@@ -1,6 +1,8 @@
 /.venv/
 /.vs_code/
 
+room_capacity_sensor.egg-info/
+
 /bin/
 /build/
 /logs/
