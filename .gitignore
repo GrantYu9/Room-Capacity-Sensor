@@ -1,0 +1,7 @@
+/.vs_code/
+
+/bin/
+/build/
+/logs/
+
+.DS_Store
