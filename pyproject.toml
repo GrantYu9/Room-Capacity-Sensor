@@ -1,0 +1,7 @@
+[project]
+name = "scraper_1000"
+version = "0.1.0"
+dependencies = [
+    "python-dotenv>=1.0.0",
+    "ultralytics>=8.4.0"
+]
