@@ -1,4 +1,4 @@
 from json import *
 
-def send_data(data) -> None:
+def send_data(host: str, ) -> None:
     pass
