@@ -1,13 +1,22 @@
-from ultralytics import *
 from enum import Enum
+from pathlib import Path
 
-model = YOLO('yolo26n.pt')
+from ultralytics import *
 
-results = model("room.png", classes = [0], conf = 0.25)
+class ImageProcessor:
+    def __init__(self) -> None:
+        self._SRC: Path = Path(__file__).parent.parent
+        self._DATA:Path = self._SRC / "data"
 
-count = len(results[0].boxes)
+        model_path: Path = self._DATA / "yolo26n.pt"
 
-class Capacity(Enum):
-    LOCATION = "Study Room 1"
-    COUNT = count
+        self._model = YOLO(model_path)
+
+    def process_image(self) -> None:
+        results = self._model("room.png", classes = [0], conf = 0.25)
+        count = len(results[0].boxes)
+
+    class Capacity(Enum):
+        LOCATION = "Study Room 1"
+        COUNT = count
 
