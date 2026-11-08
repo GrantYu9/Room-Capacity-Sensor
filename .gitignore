@@ -9,6 +9,7 @@ __pycache__/
 /logs/
 /data/temp/
 
-.env
+/.env
+/data/external/yolo26x.pt
 
 .DS_Store
