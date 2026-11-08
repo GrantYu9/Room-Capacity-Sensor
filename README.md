@@ -25,6 +25,35 @@ the previous window intact. Use `--keep-captures` to keep every window instead.
 
 ## Connect to the website
 
+For interactive setup, run from this directory:
+
+```sh
+.venv/bin/python interface/setup.py
+```
+
+Choose a detected webcam, then fuzzy-search website rooms by ID, name, building
+or address. The picker uses `fzf` when installed; `--no-fzf` selects the numbered
+search fallback. Linux metadata-only video nodes are excluded without recording
+video. The webcam's USB microphone is matched automatically when possible;
+otherwise choose an input from the list.
+
+Setup reuses a matching `.env.*` device profile; `--env .env.laptop` selects a
+particular profile. A different room needs a newly registered device token. If
+the trusted adjacent app checkout is available, setup offers to register one
+there, preserving existing devices and credentials. Otherwise provide a private
+profile provisioned through the backend. Database credentials stay in the app.
+
+The resulting `run-sensor.local.sh` contains hardware choices and the profile
+path, never the token. Setup asks before starting capture; `--configure-only`
+only saves that launcher. To reuse it or test one window:
+
+```sh
+./run-sensor.local.sh
+./run-sensor.local.sh --once
+```
+
+The launcher and private profiles are ignored by Git.
+
 Follow [room/device mapping](docs/room-device-mapping.md) to register an installation
 in the app backend and securely copy its private credentials to `.env.sensor`.
 Deploy the updated API and apply `npm run db:confidence` in the app repository first.

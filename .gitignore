@@ -13,6 +13,8 @@ __pycache__/
 .env.*
 !.env.example
 /data/outbox/
+/run-sensor.local.sh
+/.sensor-launch-*
 
 # Generated evaluation runs and machine-local provenance stay local.
 /.pytest_cache/

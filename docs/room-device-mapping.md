@@ -18,6 +18,14 @@ It contains `API_URL`, `ROOM_ID`, `DEVICE_ID`, `DEVICE_TOKEN`. Environment varia
 override file values. Keep tokens and database URLs out of logs/Git. Only a
 device token belongs on the sensor; database credentials stay on the backend.
 
+Alternatively, run `.venv/bin/python interface/setup.py` for webcam selection,
+microphone matching and fuzzy room search against the website API. It reuses a
+profile only when both API origin and room ID match. For another room, it can
+register a new installation through the trusted adjacent app checkout after you
+choose that option, or use a separately provisioned profile. It never reassigns
+or disables an existing device. The saved `run-sensor.local.sh` clears shell
+credential overrides so it always uses the selected file.
+
 ```sh
 .venv/bin/python interface/main.py --list-devices
 .venv/bin/python interface/main.py --upload --env .env.sensor \
