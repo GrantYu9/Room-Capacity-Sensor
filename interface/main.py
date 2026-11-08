@@ -4,7 +4,6 @@ import argparse
 from datetime import datetime, timezone
 import json
 import math
-import shutil
 from pathlib import Path
 import sys
 import time
@@ -54,7 +53,6 @@ def parse_args(argv=None):
     parser.add_argument("--env", type=Path, default=Path(".env.sensor"), help="Private device configuration file")
     parser.add_argument("--outbox", type=Path, default=Path(__file__).resolve().parents[1] / "data/outbox/readings.sqlite3")
     parser.add_argument("--noise-calibration", type=Path, default=DEFAULT_PROFILE)
-    parser.add_argument("--keep-captures", action="store_true", help="Keep every capture (default: retain the latest until the next window completes)")
     args = parser.parse_args(argv)
     if args.duration > args.interval:
         parser.error("--duration must not exceed --interval")
@@ -76,20 +74,6 @@ def run(args):
             uploader.close()
 
 
-def retain_latest_capture(audio):
-    directory = Path(audio).parent
-    if not directory.name.startswith("capture-") or directory.is_symlink() or not directory.is_dir():
-        return
-    # Only prune completed windows retained by this runner, including across
-    # restarts. Standalone captures and --keep-captures archives have no marker.
-    marker_name = ".sensor-retained"
-    (directory / marker_name).touch()
-    for previous in directory.parent.glob("capture-*"):
-        marker = previous / marker_name
-        if previous != directory and not previous.is_symlink() and previous.is_dir() and marker.is_file() and not marker.is_symlink():
-            shutil.rmtree(previous)
-
-
 def run_windows(args, uploader=None):
     processor = ImageProcessor(args.model, args.confidence, NoiseCalibration.load(args.noise_calibration))
     print(f"Camera: {args.camera}; microphone: {args.audio_device if args.audio_device is not None else 'webcam auto'}; "
@@ -98,18 +82,11 @@ def run_windows(args, uploader=None):
     while True:
         time.sleep(max(0, next_window - time.monotonic()))
         measured_at = datetime.now(timezone.utc).isoformat(timespec="milliseconds")
-        audio, images = get_data(
+        audio, images, sample_rate = get_data(
             args.camera, args.audio_device, duration=args.duration,
             image_count=args.images, sample_rate=args.sample_rate,
         )
-        try:
-            result = processor.process_data(audio, images, args.location,
-                                            annotation_dir=Path(audio).parent / "annotated")
-        finally:
-            if not args.keep_captures:
-                retain_latest_capture(audio)
-        result["audio_file"] = str(audio)
-        result["image_files"] = [str(path) for path in images]
+        result = processor.process_data(audio, images, args.location, sample_rate=sample_rate)
         result["measured_at"] = measured_at
         if uploader:
             result["room_id"] = uploader.config.room_id

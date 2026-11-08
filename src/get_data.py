@@ -1,15 +1,12 @@
 """Select devices and capture concurrent audio and evenly spaced webcam frames."""
 
-from pathlib import Path
 import re
-import shutil
-import tempfile
 import threading
 import time
+from pathlib import Path
 
 import cv2
 import numpy as np
-import soundfile as sf
 
 
 def _sounddevice():
@@ -143,7 +140,9 @@ class Listener:
         if status:
             self._errors.append(str(status))
         count = min(frames, len(self._samples) - self._position)
-        self._samples[self._position:self._position + count] = samples[:count]
+        # Some host APIs deliver float samples slightly outside nominal full
+        # scale. Keep captured audio in the normalized range used by analysis.
+        self._samples[self._position:self._position + count] = np.clip(samples[:count], -1.0, 1.0)
         self._position += count
         if self._position == len(self._samples):
             self._done.set()
@@ -188,35 +187,14 @@ def get_data(
     duration: float = 10.0,
     image_count: int = 20,
     sample_rate: int | None = None,
-    temp_dir: Path | str | None = None,
-) -> tuple[Path, list[Path]]:
-    """Capture one window and return (audio_path, image_paths).
+) -> tuple[np.ndarray, list[np.ndarray], int]:
+    """Capture one window and return audio samples, BGR frames, and sample rate.
 
-    Creates a unique capture-* directory inside the project's data/temp (or
-    temp_dir), containing audio.wav and image_001.png, etc. WAV embeds the
-    sample rate. Files remain available until the caller deletes the directory.
-    This function performs no scheduling, analysis, or uploading.
+    Capture data stays in memory and is returned directly to the caller.
     """
     listener = Listener(resolve_microphone(camera, audio_device), sample_rate)
     with Photographer(camera) as photographer:
         photographer.take_picture()  # Discard startup frame before recording.
         audio, images = capture_sample(photographer, listener, duration, image_count)
 
-    root = Path(temp_dir) if temp_dir is not None else Path(__file__).resolve().parents[1] / "data/temp"
-    root = root.resolve()
-    root.mkdir(parents=True, exist_ok=True)
-    directory = Path(tempfile.mkdtemp(prefix="capture-", dir=root))
-    try:
-        audio_path = directory / "audio.wav"
-        sf.write(audio_path, audio, listener.sample_rate, subtype="FLOAT")
-        image_paths = []
-        for index, image in enumerate(images, start=1):
-            path = directory / f"image_{index:03d}.png"
-            if not cv2.imwrite(str(path), image):
-                raise OSError(f"Could not save image: {path}")
-            image_paths.append(path)
-        return audio_path, image_paths
-    except BaseException:
-        # Remove only the new, incomplete capture directory created by this call.
-        shutil.rmtree(directory)
-        raise
+    return audio, images, listener.sample_rate

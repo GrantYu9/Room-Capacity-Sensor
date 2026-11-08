@@ -19,7 +19,7 @@ class EnumType(StrEnum):
 
 class ImageProcessor:
     def __init__(self, model_path: Path | None = None, confidence: float = 0.15, noise_calibration=None):
-        model_path = model_path or Path(__file__).resolve().parents[1] / "data/external/yolo26x.pt"
+        model_path = model_path or Path(__file__).resolve().parents[1] / "data/external/yolo26n.pt"
         if not model_path.is_file():
             raise FileNotFoundError(f"YOLO weights not found: {model_path}")
         if not 0 < confidence <= 1:
