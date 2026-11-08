@@ -31,14 +31,17 @@ class Processor:
             EnumType.LOCATION: location
         }
 
-        data += self._room_level_db(audio)
-        data += self._process_image(image)
+        temp: dict = self._room_level_db(audio)
+        data[EnumType.DECIBELS] = temp[EnumType.DECIBELS]
+
+        temp: dict = self._process_image(image)
+        data[EnumType.COUNT] = temp[EnumType.COUNT]
 
         return data
 
 
     def _process_image(self, image: Path) -> dict:
-        results = self._model(image, classes = [0], confidence = 0.25)
+        results = self._model(image, classes = [0], conf = 0.25)
         count = len(results[0].boxes)
 
         data: dict = {
@@ -47,7 +50,7 @@ class Processor:
 
         return data
 
-    def _room_level_db(path: Path) -> int:
+    def _room_level_db(self, path: Path) -> int:
         subprocess.run(["ffmpeg", "-y", "-i", path, "-vn", path.with_suffix(".wav")], check=True)
 
         data, _ = librosa.load(path, sr=None, mono=True)
