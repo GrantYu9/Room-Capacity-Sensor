@@ -1,10 +1,15 @@
 import asyncio
 
+from os import getenv
 from process_image import ImageProcessor
 from send_data import DataSender
 
+from dotenv import load_dotenv
+
 async def main() -> None:
-    data_sender: DataSender = DataSender()
+    load_dotenv()
+
+    data_sender: DataSender = DataSender(getenv("SERVER_URL"), getenv("SERVER_PASSWORD"))
     image_processor: ImageProcessor = ImageProcessor()
 
     wait_time: int = 10
