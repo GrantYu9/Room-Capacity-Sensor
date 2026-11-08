@@ -34,6 +34,10 @@ data/temp/capture-<unique-id>/
     image_002.png
     ...
     image_020.png
+    annotated/            # Added by interface/main.py after detection
+        image_001.jpg
+        image_002.jpg
+        ...
 ```
 
 Returned paths are absolute. Images are numbered in capture order and spread
@@ -72,6 +76,9 @@ The `interface/main.py` runner manages its own completed captures: by default,
 it keeps the latest WAV/PNGs until the next window finishes processing, including
 across restarts. `--keep-captures` preserves every window instead. The runner
 does not remove standalone captures created through the Python API.
+The runner's `annotated/` JPEGs show detected-person boxes, labels and confidence
+scores. They stay local and are removed together with that capture when the next
+window replaces it. The original PNGs are not modified.
 
 ## Choose devices or adjust capture
 

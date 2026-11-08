@@ -103,7 +103,8 @@ def run_windows(args, uploader=None):
             image_count=args.images, sample_rate=args.sample_rate,
         )
         try:
-            result = processor.process_data(audio, images, args.location)
+            result = processor.process_data(audio, images, args.location,
+                                            annotation_dir=Path(audio).parent / "annotated")
         finally:
             if not args.keep_captures:
                 retain_latest_capture(audio)

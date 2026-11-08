@@ -3,6 +3,7 @@
 from enum import StrEnum
 from pathlib import Path
 
+import cv2
 import numpy as np
 import soundfile as sf
 from ultralytics import YOLO
@@ -27,12 +28,14 @@ class ImageProcessor:
         self._confidence = confidence
         self._noise_calibration = noise_calibration or NoiseCalibration.load()
 
-    def process_data(self, audio, image, location: str = "", *, sample_rate=None) -> dict:
+    def process_data(self, audio, image, location: str = "", *, sample_rate=None, annotation_dir=None) -> dict:
         """Analyze audio samples/a sound file and every supplied BGR image/path.
 
         Count rounds the all-frame arithmetic mean half up; mean_count retains it.
         Decibels is 20 log10(RMS) over all normalized audio samples (dBFS),
-        with a -120 dBFS floor for silence. No media is saved or uploaded.
+        with a -120 dBFS floor for silence. If annotation_dir is supplied, save
+        a separate JPEG per frame with person boxes, labels and confidence.
+        Original frames are unchanged. No media is uploaded.
         """
         level = audio_level(audio, sample_rate)
         calibration = getattr(self, "_noise_calibration", None) or NoiseCalibration.load()
@@ -40,7 +43,11 @@ class ImageProcessor:
         images = [image] if isinstance(image, (str, Path, np.ndarray)) else list(image)
         if not images:
             raise ValueError("At least one image is required")
-        image_results = [self._process_image(frame) for frame in images]
+        image_results = [
+            self._process_image(frame, annotation_path=Path(annotation_dir) / f"image_{index:03d}.jpg")
+            if annotation_dir is not None else self._process_image(frame)
+            for index, frame in enumerate(images, start=1)
+        ]
         counts = [result[EnumType.COUNT] for result in image_results]
         detections = sum(counts)
         average_confidence = (sum(result[EnumType.AVERAGE_CONFIDENCE] * result[EnumType.COUNT]
@@ -56,9 +63,11 @@ class ImageProcessor:
             **calibration.classify(level["decibels"]),
             "per_image_counts": counts,
             "image_count": len(counts),
+            "annotated_image_files": [result["annotated_image_file"] for result in image_results
+                                      if "annotated_image_file" in result],
         }
 
-    def _process_image(self, image) -> dict:
+    def _process_image(self, image, *, annotation_path=None) -> dict:
         # COCO class 0 is person. Ultralytics uses `conf`, not `confidence`.
         results = self._model.predict(
             source=str(image) if isinstance(image, Path) else image,
@@ -68,8 +77,16 @@ class ImageProcessor:
             raise RuntimeError("YOLO did not return a detection result for the image")
         boxes = results[0].boxes
         count = len(boxes)
-        return {EnumType.COUNT: count,
-                EnumType.AVERAGE_CONFIDENCE: float(boxes.conf.mean()) if count else None}
+        result = {EnumType.COUNT: count,
+                  EnumType.AVERAGE_CONFIDENCE: float(boxes.conf.mean()) if count else None}
+        if annotation_path is not None:
+            path = Path(annotation_path).resolve()
+            path.parent.mkdir(parents=True, exist_ok=True)
+            annotated = results[0].plot(boxes=True, labels=True, conf=True)
+            if not cv2.imwrite(str(path), annotated):
+                raise OSError(f"Could not save annotated image: {path}")
+            result["annotated_image_file"] = str(path)
+        return result
 
 
 class Processor(ImageProcessor):

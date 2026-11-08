@@ -22,6 +22,10 @@ Each capture saves WAV/PNGs in a unique `data/temp/capture-*` directory. By
 default, the latest window stays available until the next window finishes
 processing, including across restarts and `--once` runs. A failed capture leaves
 the previous window intact. Use `--keep-captures` to keep every window instead.
+The runner also saves detection previews in that window's `annotated/` folder
+(`image_001.jpg`, etc.), with person boxes, class labels and confidence scores.
+Original PNGs stay unchanged. Previews share the same retention policy and stay
+local; website uploads still contain aggregate metadata only.
 
 ## Connect to the website
 
@@ -147,6 +151,7 @@ Each completed window prints a JSON object with:
 - `image_count`, `audio_duration_seconds`, and `sample_rate`: capture details.
 - `location` and `measured_at`: label and UTC recording-start time.
 - `audio_file` and `image_files`: absolute paths to the retained capture.
+- `annotated_image_files`: absolute paths to the local detection previews.
 - In upload mode: `room_id`, `device_id`, `upload_status`, and `uploaded_readings`.
 
 The API stores integer counts and nullable `average_confidence` in readings,

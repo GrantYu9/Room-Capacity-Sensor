@@ -181,6 +181,7 @@ def test_runner_posts_and_retains_latest_media_and_confidence(tmp_path):
         assert directory.exists()
         assert result["audio_file"] == str(audio)
         assert result["image_files"] == []
+        processor.return_value.process_data.assert_called_once_with(audio, [], "", annotation_dir=directory / "annotated")
 
 
 @pytest.mark.parametrize("keep_all", [False, True])
@@ -198,7 +199,7 @@ def test_runner_replaces_retained_window_only_after_next_analysis_across_restart
         (directory / "audio.wav").touch()
         (directory / "image_001.png").touch()
 
-    def analyze(*args):
+    def analyze(*args, **kwargs):
         # The previous window remains readable while the new one is processed.
         assert (first / "image_001.png").exists()
         return dict(RESULT)
