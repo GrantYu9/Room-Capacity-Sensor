@@ -1,6 +1,6 @@
 from psycopg import connect, Connection
 
-from process_data import EnumType
+from .process_data import EnumType
 
 class Sender:
     def __init__(self, id: int, url: str, password: str):
@@ -11,7 +11,8 @@ class Sender:
                 id BIGSERIAL PRIMARY KEY,
                 location TEXT,
                 count INTEGER NOT NULL,
-                decibels DOUBLE PRECISION
+                decibels DOUBLE PRECISION,
+                average_confidence DOUBLE PRECISION
             )
         '''
         
@@ -27,7 +28,7 @@ class Sender:
             ON CONFLICT (id) DO UPDATE SET
                 location = EXCLUDED.location,
                 count = EXCLUDED.count,
-                decibels = EXCLUDED.decibels
+                decibels = EXCLUDED.decibels,
                 average_confidence = EXCLUDED.average_confidence
         '''
 

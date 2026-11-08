@@ -1,0 +1,41 @@
+{
+  "seed": 42,
+  "samples": [
+    {
+      "file": "calibration-quiet-0.wav",
+      "band": "quiet",
+      "target_dbfs": -65,
+      "sha256": "2cfcb17c201ca03d2ebad09c739c73e1b8237126f304acafeb53250e799e372d"
+    },
+    {
+      "file": "calibration-quiet-1.wav",
+      "band": "quiet",
+      "target_dbfs": -55,
+      "sha256": "31a0fab83aeb024e9c1954b3cb964b33bdfae823372614f14978cf6eb98caf83"
+    },
+    {
+      "file": "calibration-moderate-0.wav",
+      "band": "moderate",
+      "target_dbfs": -40,
+      "sha256": "d89e23631bf3c68e7dfc44e200786f173b5f1a1a8b64bee060f54b56ed207f4d"
+    },
+    {
+      "file": "calibration-moderate-1.wav",
+      "band": "moderate",
+      "target_dbfs": -34,
+      "sha256": "041e51d37f8e1b6344fc5a0af480ed5cf2c16158ee2a6c76c4630b7c363aab63"
+    },
+    {
+      "file": "calibration-lively-0.wav",
+      "band": "lively",
+      "target_dbfs": -20,
+      "sha256": "c06809e27f3a94410a28646d1ba0ac596c88546014c4ab65756856b21b0d4398"
+    },
+    {
+      "file": "calibration-lively-1.wav",
+      "band": "lively",
+      "target_dbfs": -12,
+      "sha256": "5b3838245298f960fd0c25bb1e15b0a228bcc3a4cd96a4c40b43cc7db26352c8"
+    }
+  ]
+}

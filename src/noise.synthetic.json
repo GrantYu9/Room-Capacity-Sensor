@@ -1,0 +1,6 @@
+{
+  "profile_id": "synthetic-rms-v1",
+  "quiet_max_dbfs": -47.5,
+  "moderate_max_dbfs": -27.0,
+  "provenance": "Generated digital-level WAV fixtures; provisional bands, not acoustic/dBA calibration. Refit for each microphone and fixed gain using labelled room recordings."
+}

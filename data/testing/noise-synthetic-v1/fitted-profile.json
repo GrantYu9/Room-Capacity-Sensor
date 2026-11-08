@@ -1,0 +1,6 @@
+{
+  "profile_id": "synthetic-rms-v1",
+  "quiet_max_dbfs": -47.50000000053896,
+  "moderate_max_dbfs": -26.999999999012935,
+  "provenance": "Generated digital-level fixtures; provisional, not acoustic/dBA calibration."
+}

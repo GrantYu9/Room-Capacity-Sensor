@@ -1,0 +1,34 @@
+{
+  "generator_tool": "built-in image_gen.imagegen",
+  "generation_note": "Seven separate prompts; no reference images or edits. No seed/model version control exposed by the built-in tool. Ground truth was visually reviewed independently of prompts before predictions.",
+  "prompts": [
+    {
+      "id": "empty",
+      "prompt": "Use case: photorealistic-natural. Asset type: synthetic evaluation photograph for a person-counting camera model. Generate one unannotated landscape 4:3 photograph, no panels, no collage. An EMPTY realistic university study lounge, viewed from a small security webcam mounted high in a room corner, wide angle looking slightly down. Desks, 10 empty chairs, a sofa, backpacks, coats draped on chairs, a potted plant, bookshelf and laptops. Bright diffuse daytime window lighting, natural slightly compressed webcam photograph rather than polished architectural rendering. ABSOLUTELY ZERO PEOPLE, no humans on screens, no posters showing people, no faces, no mannequins, no reflections of humans. Ordinary realistic furniture shapes including an empty coat on a chair. No text, no watermarks, no bounding boxes. This is an empty-room negative control."
+    },
+    {
+      "id": "single",
+      "prompt": "Use case: photorealistic-natural. Synthetic person-counting evaluation scene. A photorealistic landscape 4:3 still from a modest 640x480 university security webcam mounted high in one corner of a study lounge. EXACTLY ONE living adult student in the entire image, seated sideways at a table using a laptop, head shoulders torso and some legs clearly visible, wearing a blue hoodie. Empty chairs, empty desks, bags, bookshelf. Neutral normal daylight, realistic slightly soft webcam quality, all people inside the frame. No other people, no faces on posters/screens, no mirrors, no text, no watermarks, no detection boxes. Ordinary candid study environment. This image tests one seated person."
+    },
+    {
+      "id": "sparse",
+      "prompt": "Use case: photorealistic-natural. Synthetic person-counting evaluation scene. A photorealistic landscape 4:3 webcam view of a university study lounge, security camera mounted high in the corner looking across multiple tables. EXACTLY FOUR living adult students, four distinct separated bodies and heads: one person in yellow sweater seated near left reading, one in blue shirt seated at rear table, one in green cardigan standing in middle aisle holding a book, one in red sweater seated at right on sofa. All four are clearly visible, no one touches/overlaps another, mixed skin tones and genders. Empty chairs and backpacks elsewhere. Normal diffuse daytime light, ordinary camera quality. No other humans, no face posters, no mirrors, no human images on laptop screens, no labels, no watermark, no bounding boxes."
+    },
+    {
+      "id": "crowded",
+      "prompt": "Use case: photorealistic-natural. Synthetic person-counting evaluation scene. A single photorealistic landscape 4:3 image from a high corner webcam overlooking a large university group study room. EXACTLY TWELVE living adult students arranged naturally around three separate tables with FOUR people at each table. All twelve heads visible and countable, diverse clothing and skin tones. Include seated people leaning over laptops and books; chairs and table edges hide some legs. Near table students larger, rear table students much smaller due to perspective. Natural busy study scene, bright overhead lighting, slightly soft compressed webcam photograph, no cinematic effects. No extra people in background or outside windows, no portraits/screens showing people, no mirrors, no text, no annotations, no watermarks. This tests crowded room seated people and small distant detections."
+    },
+    {
+      "id": "occluded",
+      "prompt": "Use case: photorealistic-natural. Asset type: synthetic model evaluation image. Generate one landscape 4:3 photorealistic security-webcam still from high in a university study room corner. EXACTLY SIX living adult students, all SIX heads distinctly visible and countable. Four students are seated at a long table behind tall laptop screens so mostly heads, shoulders and forearms are visible; the table and chair backs hide their lower bodies. The other two students stand near the far end of the table, partially overlapping but both heads and some torso are visible. Ordinary clothing with contrasting colors, overhead room lighting, realistic perspective and compressed webcam detail. Include a column partially hiding one standing person's shoulder, NOT their face. No extra people or portraits outside/on screens, no mirrors, no labels, no bounding boxes, no watermark. This is a partially occluded people-counting challenge."
+    },
+    {
+      "id": "dim",
+      "prompt": "Use case: photorealistic-natural. Asset type: synthetic model evaluation image. Generate one unannotated landscape 4:3 photorealistic image from a fixed high-corner webcam in a university study lounge at dusk. EXACTLY FOUR living adult students with four distinct heads: one reading near foreground left, two seated at separate laptops in the middle, one standing next to far rear window. Dim room interior, bright sunset light outside causing backlit silhouettes for the distant person, realistic webcam sensor grain and low contrast but people still countable by a careful observer. Tables, chairs and books. Preserve natural darkness rather than lighting every face artificially. No other people, no people shown on posters or screens, no mirrors, no text, no bounding boxes, no watermarks. Test of low light and backlighting."
+    },
+    {
+      "id": "distractors",
+      "prompt": "Use case: photorealistic-natural. Asset type: synthetic model evaluation image. One landscape 4:3 photorealistic image from an ordinary high-corner security webcam in a university common room, for evaluating a person-counting model. EXACTLY TWO LIVING adult students actually present: one in green standing at far left by a bookshelf, one in dark blue seated at a table toward the right looking at a laptop. In addition, on the central wall a LARGE full-height rectangular flat printed poster photograph showing one person standing, visibly mounted with a clear poster border and corners. An unattended open laptop on a separate empty foreground desk displays a video-call face on its screen. A jacket and hat on an empty chair create a human-like silhouette. The real two students have separate unobstructed visible heads and bodies. Bright normal lighting, realistic slightly soft webcam photograph, poster and screen clearly identifiable as flat images. No mirrors, no extra real students, no labels, no text, no watermarks, no detection boxes. Ground truth target counts only physical people actually in the room, not images of people."
+    }
+  ]
+}

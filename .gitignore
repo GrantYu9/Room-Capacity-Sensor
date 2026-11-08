@@ -10,5 +10,14 @@ __pycache__/
 /data/temp/
 
 .env
+.env.*
+!.env.example
+/data/outbox/
+
+# Generated evaluation runs and machine-local provenance stay local.
+/.pytest_cache/
+/data/testing/synthetic-2026-11-07/results/
+/data/testing/synthetic-2026-11-07/generation-files.json
+/data/testing/synthetic-2026-11-07/REPORT.md
 
 .DS_Store

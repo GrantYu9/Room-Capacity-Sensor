@@ -1,0 +1,60 @@
+{
+  "dataset_kind": "synthetic challenge set; not a representative real-camera validation dataset",
+  "created_at": "2026-11-08T06:54:04.677885+00:00",
+  "prediction_target": "Number of physical people visibly present in one camera image. Exclude depictions on posters/screens. Count partially occluded people when a distinct head/person is visible.",
+  "label_method": "Two independent visual inspections of generated pixels agreed before any generated-scene model predictions. Labels are visual annotations, not prompt-requested counts.",
+  "leakage_audit": "No training or threshold selection on these images. Pretrained weights stay fixed. Scenes generated after the pretrained checkpoint; original training contents unavailable, so broader contamination is not proven absent. Camera-size variants are paired views of the same scene, never independent samples.",
+  "confidence": 0.25,
+  "frozen_before_inference": true,
+  "scenes": [
+    {
+      "id": "empty",
+      "image": "images/empty.png",
+      "people_count": 0,
+      "annotation_notes": "No occupants; coats on chairs are objects.",
+      "sha256": "6c38efbff0a57a62f935f5259d8719dae28af6c43217e28d452c201a07c61850"
+    },
+    {
+      "id": "single",
+      "image": "images/single.png",
+      "people_count": 1,
+      "annotation_notes": "One seated blue-hoodie laptop user at the left table.",
+      "sha256": "716a3e25cb7f5bd8f4d74d4cd78da9499ae7e571d3a8054918f65f448284bbfb"
+    },
+    {
+      "id": "sparse",
+      "image": "images/sparse.png",
+      "people_count": 4,
+      "annotation_notes": "Yellow at left table; blue at rear table; green in central aisle; red on right sofa.",
+      "sha256": "e859037ea75cdb3bfa383357a6a35443e3ef522507c3f7f0e9c25775e9432369"
+    },
+    {
+      "id": "crowded",
+      "image": "images/crowded.png",
+      "people_count": 12,
+      "annotation_notes": "Four at foreground table, four at left middle table, four at rear table. Twelve distinct heads.",
+      "sha256": "bb81e091d3d7e244082c9d48ce8346f3c818640307c8b01a40e6325c79faa835"
+    },
+    {
+      "id": "occluded",
+      "image": "images/occluded.png",
+      "people_count": 6,
+      "annotation_notes": "Four seated students and two standing behind. Bodies partially hidden by laptops, table and column.",
+      "sha256": "cdf1ae2f9d32840fc0735d1c0492438df8a12f7c13739bda0a7837218407c5ea"
+    },
+    {
+      "id": "dim",
+      "image": "images/dim.png",
+      "people_count": 4,
+      "annotation_notes": "Front-left reader, central laptop user, right laptop user, and standing person at rear window.",
+      "sha256": "3ca5767be043725e6e5651694cb4ab5d3feb199ca6192d22dc30ebf9d51af417"
+    },
+    {
+      "id": "distractors",
+      "image": "images/distractors.png",
+      "people_count": 2,
+      "annotation_notes": "Two physical occupants: standing by left bookshelf and seated at right table. Exclude wall poster, foreground video-call face, and jacket/hat on empty chair.",
+      "sha256": "1f9a73f20be03c89c14841c4b46d33e859430ba10e42d2d7b064978f71c73a6a"
+    }
+  ]
+}

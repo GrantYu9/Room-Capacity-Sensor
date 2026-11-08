@@ -1,0 +1,59 @@
+{
+  "seed": 42,
+  "samples": [
+    {
+      "file": "check-quiet-0.wav",
+      "band": "quiet",
+      "target_dbfs": -90,
+      "sha256": "9a9346c93556724ab1a6f28953f3723e2b2bea691f226198f51d9cab0c3efdf1"
+    },
+    {
+      "file": "check-quiet-1.wav",
+      "band": "quiet",
+      "target_dbfs": -60,
+      "sha256": "08f3b6ab75c064c1c58e82bb015c23394556912e36b5c71bea04bf3e1cc18fc0"
+    },
+    {
+      "file": "check-quiet-2.wav",
+      "band": "quiet",
+      "target_dbfs": -50,
+      "sha256": "8c32b7b4fd78e5ae511689682db003384b90836e8f882ff0bc3119963b6cedaa"
+    },
+    {
+      "file": "check-moderate-0.wav",
+      "band": "moderate",
+      "target_dbfs": -44,
+      "sha256": "0b98b92fe006e58724e8f637527a80b0f115513703c3b7bf8ff290b9fc66c252"
+    },
+    {
+      "file": "check-moderate-1.wav",
+      "band": "moderate",
+      "target_dbfs": -36,
+      "sha256": "79669701bc54edd56d79e7dde0c82dfe7bc198252d322a3dad3223d9286f3826"
+    },
+    {
+      "file": "check-moderate-2.wav",
+      "band": "moderate",
+      "target_dbfs": -30,
+      "sha256": "fabe3e55697aa753ff97edeea9ad6be1d36b2f9f141bb64ad5fafd783a67ebda"
+    },
+    {
+      "file": "check-lively-0.wav",
+      "band": "lively",
+      "target_dbfs": -24,
+      "sha256": "aaafb8eb0013d4cad31f9c95d04326774e475ae889fdf2b18e5b0536eeec856b"
+    },
+    {
+      "file": "check-lively-1.wav",
+      "band": "lively",
+      "target_dbfs": -18,
+      "sha256": "7f5357f096490c6fec3cb6993d306e082c98b5a3f06aeebc70b8d5d9a07d6f4f"
+    },
+    {
+      "file": "check-lively-2.wav",
+      "band": "lively",
+      "target_dbfs": -10,
+      "sha256": "47135d4592d4dc736804279dc7fa95b546b8723c5d7f4698839d49fbf94cf7d3"
+    }
+  ]
+}

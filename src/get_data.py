@@ -61,8 +61,9 @@ def resolve_microphone(camera: int | str, device: int | str | None) -> int | str
     if len(candidates) == 1:
         return candidates[0]
     raise ValueError(
-        "Cannot uniquely match this webcam's microphone. Call list_microphones() "
-        "and pass audio_device=ID (or explicitly use audio_device='default')."
+        "Cannot uniquely match this webcam's microphone. Use --list-devices and "
+        "choose --audio-device ID (audio_device=ID in Python), or explicitly "
+        "use --audio-device default."
     )
 
 
@@ -99,7 +100,7 @@ class Photographer:
             if len(frames) < image_count and elapsed >= len(frames) * duration / image_count:
                 frames.append(frame.copy())
         if len(frames) != image_count:
-            raise RuntimeError(f"Captured {len(frames)}/{image_count} images; lower image_count")
+            raise RuntimeError(f"Captured {len(frames)}/{image_count} images; lower --images")
         return frames
 
     def close(self):
