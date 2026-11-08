@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import StrEnum
 from pathlib import Path
 
 from ultralytics import *
@@ -12,11 +12,17 @@ class ImageProcessor:
 
         self._model = YOLO(model_path)
 
-    def process_image(self) -> None:
+    def process_image(self, location: str) -> dict:
         results = self._model("room.png", classes = [0], conf = 0.25)
         count = len(results[0].boxes)
 
-    class Capacity(Enum):
-        LOCATION = "Study Room 1"
-        COUNT = count
+        data: dict = {
+            EnumType.LOCATION: location,
+            EnumType.COUNT: count
+        }
 
+        return data
+
+class EnumType(StrEnum):
+    LOCATION = "location"
+    COUNT = "count"
