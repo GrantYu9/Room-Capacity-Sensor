@@ -87,10 +87,20 @@ On Linux, install PortAudio through your system package manager if the audio
 library cannot load (`portaudio` on Arch, `libportaudio2` on Debian/Ubuntu).
 The selected camera and microphone must be accessible and free for capture.
 
-Use this checkout (or an editable install) to find the included
-`data/external/yolo26n.pt` weights automatically. A non-editable installation
-needs `--model /absolute/path/to/yolo26n.pt` because weights are kept in the
-source checkout. The model is loaded once and reused across windows.
+The sensor defaults to **YOLO26x**, a confidence threshold of **0.15**, and a
+requested camera resolution of **1920×1080** (actual output depends on the
+camera). Download the official weights once from this directory:
+
+```sh
+.venv/bin/python -c 'from ultralytics.utils.downloads import attempt_download_asset; attempt_download_asset("data/external/yolo26x.pt", release="v8.4.0")'
+```
+
+The 113 MiB checkpoint stays outside Git. Its official source is
+[Ultralytics assets](https://github.com/ultralytics/assets/releases/download/v8.4.0/yolo26x.pt).
+The model is loaded once and reused across windows. For a lighter option, pass
+`--model data/external/yolo26n.pt --confidence 0.25` using the included nano
+checkpoint. A non-editable installation needs an absolute `--model` path because
+weights are stored in the source checkout.
 
 ## Choose devices and run
 
@@ -118,7 +128,7 @@ an explicit microphone ID/name (or `default`). The listing of camera names is
 Linux-specific. IDs can change after devices are reconnected.
 
 Optional settings: `--interval 60 --duration 10 --images 20 --sample-rate 48000
---confidence 0.25`. The audio rate defaults to the microphone's native rate.
+--confidence 0.15`. The audio rate defaults to the microphone's native rate.
 `--once` exits after one analysis; otherwise stop with Ctrl+C. The webcam is
 released between windows. Missed windows are skipped if analysis takes longer
 than the interval, so inference time does not accumulate as scheduling drift.
@@ -202,7 +212,7 @@ and does not call it.
 pixel-reviewed occupant counts and generation prompts. Evaluation reports are
 generated locally and excluded from Git.
 These are synthetic challenge cases, not measured real-camera accuracy.
-Run the real model with its current 0.25 confidence threshold, at native input
+The frozen evaluator uses the nano checkpoint and its original 0.25 confidence threshold, at native input
 size and after downsampling to 640×480, without any camera, microphone or uploads:
 
 ```bash

@@ -13,6 +13,7 @@ __pycache__/
 .env.*
 !.env.example
 /data/outbox/
+/data/external/yolo26x.pt
 /run-sensor.local.sh
 /.sensor-launch-*
 

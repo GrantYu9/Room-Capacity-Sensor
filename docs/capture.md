@@ -48,7 +48,7 @@ audio, sample_rate = sf.read(audio_path, dtype="float32")
 # Duration in seconds: len(audio) / sample_rate.
 
 for image_path in image_paths:
-    image = cv2.imread(str(image_path))  # BGR channel order; requests 640 x 480.
+    image = cv2.imread(str(image_path))  # BGR channel order; requests 1920 x 1080.
     # Run your model here. YOLO also accepts str(image_path) directly.
 ```
 

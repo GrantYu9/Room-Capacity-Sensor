@@ -48,7 +48,7 @@ def parse_args(argv=None):
     parser.add_argument("--sample-rate", type=positive_int, help="Audio Hz; defaults to the microphone's native rate")
     parser.add_argument("--location", default="", help="Location label included in the result")
     parser.add_argument("--model", type=Path, help="Local YOLO detection weights")
-    parser.add_argument("--confidence", type=positive_float, default=0.25)
+    parser.add_argument("--confidence", type=positive_float, default=0.15)
     parser.add_argument("--once", action="store_true", help="Analyze one window, then exit")
     parser.add_argument("--upload", action="store_true", help="Write each completed window to the authenticated readings API")
     parser.add_argument("--env", type=Path, default=Path(".env.sensor"), help="Private device configuration file")

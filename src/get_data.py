@@ -80,8 +80,8 @@ class Photographer:
         if not self._capture.isOpened():
             self.close()
             raise RuntimeError(f"Cannot open webcam {camera!r}")
-        self._capture.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-        self._capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+        self._capture.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+        self._capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
         self._capture.set(cv2.CAP_PROP_BUFFERSIZE, 1)
 
     def take_picture(self) -> np.ndarray:

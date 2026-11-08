@@ -11,7 +11,9 @@ class TestProcessor:
 
     @pytest.fixture
     def processor(self) -> Processor:
-        return Processor()
+        # These historical expected detections belong to the nano checkpoint
+        # at its original threshold, independently of the live sensor default.
+        return Processor(self._ROOT / "data/external/yolo26n.pt", confidence=0.25)
 
     def test_process_data_sanity(self, processor: Processor) -> None:
         expected: dict = {
