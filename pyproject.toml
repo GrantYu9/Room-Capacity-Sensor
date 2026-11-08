@@ -1,7 +1,8 @@
 [project]
-name = "scraper_1000"
+name = "room_capacity_sensor"
 version = "0.1.0"
 dependencies = [
+    "psycopg>=3.3.0",
     "python-dotenv>=1.0.0",
     "ultralytics>=8.4.0"
 ]

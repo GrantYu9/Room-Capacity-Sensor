@@ -7,4 +7,6 @@ room_capacity_sensor.egg-info/
 /build/
 /logs/
 
+.env
+
 .DS_Store
