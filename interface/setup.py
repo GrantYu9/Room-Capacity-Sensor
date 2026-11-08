@@ -58,6 +58,12 @@ def capture_capable(path):
 
 
 def discover_cameras():
+    if sys.platform == "darwin":
+        from src.get_data import list_cameras
+        try:
+            return list_cameras()
+        except RuntimeError as error:
+            raise SetupError(str(error)) from None
     cameras = []
     for node in sorted(Path("/sys/class/video4linux").glob("video*"), key=lambda p: int(p.name[5:])):
         device = Path("/dev") / node.name
@@ -261,11 +267,38 @@ def save_launcher(path, command):
             temporary.unlink(missing_ok=True)
 
 
+def default_backend():
+    for name in ("Room-Capacity-Website", "Room-Capacity-App"):
+        path = ROOT.parent / name
+        if (path / "scripts/add-device.js").is_file():
+            return path
+    return ROOT.parent / "Room-Capacity-Website"
+
+
+def select_microphone(camera, *, use_fzf=True):
+    from src.get_data import list_microphones, resolve_microphone
+    if sys.platform != "darwin":
+        try:
+            microphone = resolve_microphone(int(camera) if camera.isdecimal() else camera, None)
+            print(f"Matched webcam microphone: input {microphone}.")
+            return microphone
+        except ValueError:
+            pass
+    # AVFoundation camera indices and CoreAudio microphone indices are unrelated.
+    try:
+        microphones = list_microphones()
+    except Exception:
+        hint = " On macOS, allow Microphone access for your terminal or IDE in System Settings → Privacy & Security." if sys.platform == "darwin" else ""
+        raise SetupError("Could not list microphone inputs. Check the audio device and PortAudio installation." + hint) from None
+    return choose("Microphone", [(f"{mic['name']} · input {mic['device']}", mic["device"]) for mic in microphones]
+                  + [("System default microphone", "default")], use_fzf=use_fzf)
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--api-url", help=f"Website origin (default: profile origin or {DEFAULT_API})")
     parser.add_argument("--env", type=Path, help="Existing private device profile, e.g. .env.laptop")
-    parser.add_argument("--backend", type=Path, default=ROOT.parent / "Room-Capacity-App", help="Trusted backend checkout for optional new-device registration")
+    parser.add_argument("--backend", type=Path, default=default_backend(), help="Trusted backend checkout for optional new-device registration")
     parser.add_argument("--no-fzf", action="store_true", help="Use the numbered fuzzy-search fallback")
     parser.add_argument("--configure-only", action="store_true", help="Save the launcher without offering to start capture")
     args = parser.parse_args(argv)
@@ -278,22 +311,22 @@ def main(argv=None):
         rooms = fetch_rooms(api_url)
         cameras = discover_cameras()
         if cameras:
-            camera = choose("Webcam", [(f"{item['name']} · {item['device']}", item["device"]) for item in cameras], use_fzf=not args.no_fzf)
+            camera = choose("Webcam", [(f"{item['name']} · {item['device']}", str(item["device"])) for item in cameras], use_fzf=not args.no_fzf)
         else:
-            value = input("No accessible Linux webcams detected. Enter a camera index or /dev/video path: ").strip()
-            if not value or not (value.isdecimal() or value.startswith("/dev/")):
+            if sys.platform == "darwin":
+                print("No macOS cameras reported. Check Camera access for your terminal or IDE in System Settings → Privacy & Security.")
+                prompt = "Enter a camera index (e.g. 0), or Enter to cancel: "
+            else:
+                prompt = "No accessible Linux webcams detected. Enter a camera index or /dev/video path: "
+            value = input(prompt).strip()
+            if not value:
+                raise KeyboardInterrupt
+            if not (value.isdecimal() or (sys.platform != "darwin" and value.startswith("/dev/"))):
                 raise SetupError("No webcam selected. Check permissions and reconnect the camera.")
             camera = value
         # Importing hardware helpers never captures media. YOLO is loaded only
         # after the user elects to start the finished launcher.
-        from src.get_data import list_microphones, resolve_microphone
-        try:
-            microphone = resolve_microphone(int(camera) if camera.isdecimal() else camera, None)
-            print(f"Matched webcam microphone: input {microphone}.")
-        except ValueError:
-            microphones = list_microphones()
-            microphone = choose("Microphone", [(f"{mic['name']} · input {mic['device']}", mic["device"]) for mic in microphones]
-                                + [("System default microphone", "default")], use_fzf=not args.no_fzf)
+        microphone = select_microphone(camera, use_fzf=not args.no_fzf)
         room = choose("Room", [(room_label(room), room) for room in rooms], fuzzy=True, use_fzf=not args.no_fzf)
         print(f"Selected room: {room_label(room)}")
         profile, config = select_profile(api_url, room, available, args.backend.expanduser().resolve(), use_fzf=not args.no_fzf)
@@ -303,6 +336,8 @@ def main(argv=None):
         save_launcher(launcher, command)
         print(f"\nReady: {display(config.device_id)} → {display(config.room_id)}")
         print(f"Saved launcher: {launcher}\nRun it again with: ./run-sensor.local.sh")
+        if sys.platform == "darwin":
+            print("macOS: allow Camera and Microphone access for your terminal or IDE when prompted. Rerun setup if devices are reconnected or reordered.")
         if not args.configure_only and input("Start uploading sensor readings now? [Y/n]: ").strip().lower() in ("", "y", "yes"):
             started = True
             return subprocess.call([str(launcher)])

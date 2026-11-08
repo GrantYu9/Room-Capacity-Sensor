@@ -39,11 +39,13 @@ Choose a detected webcam, then fuzzy-search website rooms by ID, name, building
 or address. The picker uses `fzf` when installed; `--no-fzf` selects the numbered
 search fallback. Linux metadata-only video nodes are excluded without recording
 video. The webcam's USB microphone is matched automatically when possible;
-otherwise choose an input from the list.
+otherwise choose an input from the list. On macOS, cameras are listed by name
+using AVFoundation and you explicitly choose the microphone input.
 
 Setup reuses a matching `.env.*` device profile; `--env .env.laptop` selects a
 particular profile. A different room needs a newly registered device token. If
-the trusted adjacent app checkout is available, setup offers to register one
+the trusted adjacent app checkout (`Room-Capacity-Website`, or the legacy
+`Room-Capacity-App` folder) is available, setup offers to register one
 there, preserving existing devices and credentials. Otherwise provide a private
 profile provisioned through the backend. Database credentials stay in the app.
 
@@ -106,6 +108,30 @@ The model is loaded once and reused across windows. For a lighter option, pass
 checkpoint. A non-editable installation needs an absolute `--model` path because
 weights are stored in the source checkout.
 
+### macOS
+
+Use Python 3.11 or newer. From a fresh sensor checkout:
+
+```sh
+python3 -m venv .venv
+.venv/bin/python -m pip install -e .
+.venv/bin/python -c 'from ultralytics.utils.downloads import attempt_download_asset; attempt_download_asset("data/external/yolo26x.pt", release="v8.4.0")'
+.venv/bin/python interface/setup.py
+```
+
+The install includes PyObjC's AVFoundation bindings on macOS; no Linux video
+utilities are required. Existing Mac environments need to rerun the install
+command after updating. Camera discovery does not start a video stream. Camera
+indices match OpenCV's AVFoundation ordering; rerun setup after reconnecting or
+changing devices. The microphone menu uses separate CoreAudio input indices.
+
+Allow **Camera** and **Microphone** access for the app running Python (Terminal,
+iTerm, or your IDE) in **System Settings → Privacy & Security** when prompted.
+After granting access, restart the sensor command if the first attempt failed.
+`fzf` is optional; the numbered fuzzy-search picker works without it. If using a
+private device profile from another machine, copy that file securely and pass
+`--env /path/to/profile`; create a new virtual environment on the Mac itself.
+
 ## Choose devices and run
 
 ```bash
@@ -127,9 +153,10 @@ To choose an input explicitly, use its ID or name from `--list-devices`:
 .venv/bin/python interface/main.py --camera 0 --audio-device default
 ```
 
-On platforms without Linux device discovery, use the OpenCV camera index and
-an explicit microphone ID/name (or `default`). The listing of camera names is
-Linux-specific. IDs can change after devices are reconnected.
+On macOS, use the named picker in `interface/setup.py` or camera indices from
+`--list-devices`, plus an explicit microphone ID/name (or `default`). Other
+platforms without native discovery can use a camera index manually. IDs can
+change after devices are reconnected.
 
 Optional settings: `--interval 60 --duration 10 --images 20 --sample-rate 48000
 --confidence 0.15`. The audio rate defaults to the microphone's native rate.

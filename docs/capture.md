@@ -101,8 +101,11 @@ audio_path, image_paths = get_data(
 On Linux, omitting `audio_device` matches the selected USB webcam's microphone.
 If it cannot find one unique match, pass an input ID/name explicitly. Use
 `audio_device="default"` to deliberately use the system default microphone.
-On other platforms, choose an explicit microphone and camera index; camera name
-listing and automatic USB matching are Linux-specific. IDs may change when
+On macOS, `list_cameras()` lists native AVFoundation camera names and OpenCV
+indices; the setup script prompts for a separate CoreAudio microphone. Install
+the project dependencies on the Mac to include the AVFoundation bindings, and
+allow the terminal/IDE Camera and Microphone access in System Settings → Privacy
+& Security. Automatic USB microphone matching remains Linux-specific. IDs may change when
 devices are reconnected. Device lists may include camera metadata nodes that
 cannot capture pictures.
 

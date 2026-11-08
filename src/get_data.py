@@ -3,6 +3,7 @@
 from pathlib import Path
 import re
 import shutil
+import sys
 import tempfile
 import threading
 import time
@@ -19,7 +20,21 @@ def _sounddevice():
 
 
 def list_cameras() -> list[dict]:
-    """Linux camera names without opening/recording from the devices."""
+    """Linux/macOS camera names without opening or recording from devices."""
+    if sys.platform == "darwin":
+        try:
+            import AVFoundation
+        except ImportError:
+            raise RuntimeError(
+                "macOS camera discovery needs PyObjC. Reinstall this project with "
+                "`.venv/bin/python -m pip install -e .`."
+            ) from None
+        # Match OpenCV's AVFoundation backend: video + muxed devices, sorted
+        # by unique ID. system_profiler/ffmpeg listing order is not sufficient.
+        devices = list(AVFoundation.AVCaptureDevice.devicesWithMediaType_(AVFoundation.AVMediaTypeVideo))
+        devices += list(AVFoundation.AVCaptureDevice.devicesWithMediaType_(AVFoundation.AVMediaTypeMuxed))
+        return [{"device": index, "name": str(device.localizedName())}
+                for index, device in enumerate(sorted(devices, key=lambda d: str(d.uniqueID())))]
     return [
         {"device": f"/dev/{path.name}", "name": (path / "name").read_text().strip()}
         for path in sorted(Path("/sys/class/video4linux").glob("video*"))
@@ -70,7 +85,7 @@ def resolve_microphone(camera: int | str, device: int | str | None) -> int | str
 class Photographer:
     def __init__(self, camera: int | str = 0):
         source = camera
-        backend = cv2.CAP_ANY
+        backend = cv2.CAP_AVFOUNDATION if sys.platform == "darwin" else cv2.CAP_ANY
         if isinstance(camera, str):
             match = re.fullmatch(r"/dev/video(\d+)", str(Path(camera).resolve()))
             if match:
@@ -79,7 +94,8 @@ class Photographer:
         self._capture = cv2.VideoCapture(source, backend)
         if not self._capture.isOpened():
             self.close()
-            raise RuntimeError(f"Cannot open webcam {camera!r}")
+            hint = " Allow Camera access for your terminal or IDE in System Settings → Privacy & Security, then retry." if sys.platform == "darwin" else ""
+            raise RuntimeError(f"Cannot open webcam {camera!r}.{hint}")
         self._capture.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
         self._capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
         self._capture.set(cv2.CAP_PROP_BUFFERSIZE, 1)
