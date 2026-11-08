@@ -3,10 +3,10 @@
 
 room_capacity_sensor.egg-info/
 
-room_capacity_sensor.egg-info/
-
 /bin/
 /build/
 /logs/
+
+.env
 
 .DS_Store
