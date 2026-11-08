@@ -17,6 +17,7 @@ class TestProcessor:
         expected: dict = {
             EnumType.LOCATION: "",
             EnumType.COUNT: 6,
+            EnumType.AVERAGE_CONFIDENCE: pytest.approx(0.4955, abs=0.01),
             EnumType.DECIBELS: -24
         }
 

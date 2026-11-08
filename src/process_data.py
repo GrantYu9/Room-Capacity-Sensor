@@ -35,6 +35,7 @@ class Processor:
         data[EnumType.DECIBELS] = temp[EnumType.DECIBELS]
 
         temp: dict = self._process_image(image)
+        data[EnumType.AVERAGE_CONFIDENCE] = temp[EnumType.AVERAGE_CONFIDENCE]
         data[EnumType.COUNT] = temp[EnumType.COUNT]
 
         return data
@@ -42,16 +43,20 @@ class Processor:
 
     def _process_image(self, image: Path) -> dict:
         results = self._model(image, classes = [0], conf = 0.25)
-        count = len(results[0].boxes)
+        confidences = results[0].boxes.conf
+
+        count: int = len(confidences)
+        average_confidence: float = float(results[0].boxes.conf.mean())
 
         data: dict = {
-            EnumType.COUNT: count
+            EnumType.AVERAGE_CONFIDENCE: average_confidence,
+            EnumType.COUNT: count,
         }
 
         return data
 
-    def _room_level_db(self, path: Path) -> int:
-        subprocess.run(["ffmpeg", "-y", "-i", path, "-vn", path.with_suffix(".wav")], check=True)
+    def _room_level_db(self, path: Path) -> dict:
+        subprocess.run(["ffmpeg", "-y", "-i", str(path), "-vn", str(path.with_suffix(".wav"))], check=True)
 
         data, _ = librosa.load(path, sr=None, mono=True)
         rms = np.sqrt(np.mean(data ** 2))
@@ -65,6 +70,7 @@ class Processor:
         return data
 
 class EnumType(StrEnum):
+    AVERAGE_CONFIDENCE = "average_confidence"
     COUNT = "count"
     DECIBELS = "decibels"
     LOCATION = "location"

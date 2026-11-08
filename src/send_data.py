@@ -22,15 +22,16 @@ class Sender:
 
     def send_data(self, data: dict) -> None:
         query: str = '''
-            INSERT INTO room_data (id, location, count, decibels)
-            VALUES (%s, %s, %s, %s)
+            INSERT INTO room_data (id, location, count, decibels, average_confidence)
+            VALUES (%s, %s, %s, %s, %s)
             ON CONFLICT (id) DO UPDATE SET
                 location = EXCLUDED.location,
                 count = EXCLUDED.count,
                 decibels = EXCLUDED.decibels
+                average_confidence = EXCLUDED.average_confidence
         '''
 
-        modified_data: tuple = (self._id, data[EnumType.LOCATION], data[EnumType.COUNT], data[EnumType.DECIBELS])
+        modified_data: tuple = (self._id, data[EnumType.LOCATION], data[EnumType.COUNT], data[EnumType.DECIBELS], data[EnumType.AVERAGE_CONFIDENCE])
 
         with self._SERVER.transaction():
             self._SERVER.execute(query, modified_data)

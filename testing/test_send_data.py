@@ -28,6 +28,7 @@ class TestProcessor:
         data = {
             EnumType.LOCATION: "lab",
             EnumType.COUNT: 6,
+            EnumType.AVERAGE_CONFIDENCE: pytest.approx(0.4955, abs=0.01),
             EnumType.DECIBELS: -24,
         }
 
@@ -36,4 +37,4 @@ class TestProcessor:
         connection = mock_connect.return_value
         parameters = connection.execute.call_args.args[1]
 
-        assert parameters == (self._ID, "lab", 6, -24)
+        assert parameters == (self._ID, "lab", 6, -24, 0.4955)
