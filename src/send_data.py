@@ -2,7 +2,7 @@ from psycopg import connect, Connection
 
 from process_data import EnumType
 
-class DataSender:
+class Sender:
     def __init__(self, id: int, url: str, password: str):
         self._SERVER: Connection = connect(url, password=password)
 

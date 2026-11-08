@@ -6,7 +6,7 @@ import librosa
 import numpy as np
 from ultralytics import YOLO
 
-class ImageProcessor:
+class Processor:
     def __init__(self) -> None:
         self._ROOT: Path = Path(__file__).parent.parent
         self._DATA:Path = self._ROOT / "data"
