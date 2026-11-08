@@ -1,9 +1,9 @@
 from enum import StrEnum
-import librosa
 from pathlib import Path
-import numpy as np
 import subprocess
 
+import librosa
+import numpy as np
 from ultralytics import YOLO
 
 class ImageProcessor:
@@ -48,13 +48,12 @@ class ImageProcessor:
         return data
 
     def _room_level_db(path: Path) -> int:
-        subprocess.run(["ffmpeg", "-y", "-i", "/home/csaliba/my_video-2.mkv", "-vn", "/home/csaliba/my_video-2.wav"], check=True) # convert mkv or general video to wav !!!
+        subprocess.run(["ffmpeg", "-y", "-i", path, "-vn", path.with_suffix(".wav")], check=True)
 
         data, _ = librosa.load(path, sr=None, mono=True)
         rms = np.sqrt(np.mean(data ** 2))
 
         decibels:int = int(20 * np.log10(rms) if rms > 0 else float("-inf"))
-
 
         data: dict = {
             EnumType.DECIBELS: decibels

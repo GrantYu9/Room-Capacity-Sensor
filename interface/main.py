@@ -5,6 +5,9 @@ from time import sleep
 
 from dotenv import load_dotenv
 
+from src.process_data import ImageProcessor
+from src.send_data import DataSender
+
 async def main() -> None:
     load_dotenv()
 

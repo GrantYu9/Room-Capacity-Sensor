@@ -1,5 +1,3 @@
-from json import *
-
 from psycopg import connect, Connection
 
 from process_data import EnumType
@@ -21,7 +19,6 @@ class DataSender:
             self._SERVER.execute(format)
 
         self._id: int = id
-
 
     def send_data(self, data: dict) -> None:
         query: str = '''
