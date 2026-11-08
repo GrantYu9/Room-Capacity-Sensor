@@ -2,6 +2,7 @@
 /.vscode/
 
 room_capacity_sensor.egg-info/
+__pycache__/
 
 /bin/
 /build/
