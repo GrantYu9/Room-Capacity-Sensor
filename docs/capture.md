@@ -68,6 +68,11 @@ Files are ignored by Git. They do **not** expire automatically. Each call gets a
 new folder so it cannot overwrite another sample still being processed. Failed
 file writes remove that call's incomplete folder and raise an exception.
 
+The `interface/main.py` runner manages its own completed captures: by default,
+it keeps the latest WAV/PNGs until the next window finishes processing, including
+across restarts. `--keep-captures` preserves every window instead. The runner
+does not remove standalone captures created through the Python API.
+
 ## Choose devices or adjust capture
 
 ```python

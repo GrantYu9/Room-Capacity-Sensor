@@ -18,8 +18,10 @@ affects these values. See [noise calibration](docs/noise-calibration.md).
 Without `--upload`, analysis runs locally. With `--upload`, each completed window
 is queued durably and sent immediately through the website's authenticated API;
 only aggregate metadata is uploaded. No PostgreSQL credentials belong here.
-Each capture saves WAV/PNGs in a unique `data/temp/capture-*` directory, removed
-after analysis by default. Use `--keep-captures` only for local debugging.
+Each capture saves WAV/PNGs in a unique `data/temp/capture-*` directory. By
+default, the latest window stays available until the next window finishes
+processing, including across restarts and `--once` runs. A failed capture leaves
+the previous window intact. Use `--keep-captures` to keep every window instead.
 
 ## Connect to the website
 
@@ -105,7 +107,7 @@ Each completed window prints a JSON object with:
   `noise_calibration`: category and profile ID.
 - `image_count`, `audio_duration_seconds`, and `sample_rate`: capture details.
 - `location` and `measured_at`: label and UTC recording-start time.
-- `audio_file` and `image_files`: absolute paths, only with `--keep-captures`.
+- `audio_file` and `image_files`: absolute paths to the retained capture.
 - In upload mode: `room_id`, `device_id`, `upload_status`, and `uploaded_readings`.
 
 The API stores integer counts and nullable `average_confidence` in readings,

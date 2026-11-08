@@ -162,7 +162,7 @@ def test_truncated_http_response_retries_and_retains_on_exhaustion(tmp_path):
         uploader.close()
 
 
-def test_runner_posts_then_removes_media_and_keeps_confidence(tmp_path):
+def test_runner_posts_and_retains_latest_media_and_confidence(tmp_path):
     directory = tmp_path / "capture-fixture"
     directory.mkdir()
     audio = directory / "audio.wav"
@@ -178,7 +178,70 @@ def test_runner_posts_then_removes_media_and_keeps_confidence(tmp_path):
         assert result["upload_status"] == "saved"
         assert received[0][0]["people_count"] == 2
         assert received[0][0]["average_confidence"] == 0.8
-        assert not directory.exists()
+        assert directory.exists()
+        assert result["audio_file"] == str(audio)
+        assert result["image_files"] == []
+
+
+@pytest.mark.parametrize("keep_all", [False, True])
+def test_runner_replaces_retained_window_only_after_next_analysis_across_restarts(tmp_path, keep_all):
+    first = tmp_path / "capture-first"
+    second = tmp_path / "capture-second"
+    standalone = tmp_path / "capture-standalone"
+    standalone.mkdir()
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    (outside / ".sensor-retained").touch()
+    (tmp_path / "capture-symlink").symlink_to(outside, target_is_directory=True)
+    for directory in [first, second]:
+        directory.mkdir()
+        (directory / "audio.wav").touch()
+        (directory / "image_001.png").touch()
+
+    def analyze(*args):
+        # The previous window remains readable while the new one is processed.
+        assert (first / "image_001.png").exists()
+        return dict(RESULT)
+
+    flags = ["--once", *(["--keep-captures"] if keep_all else [])]
+    with patch.object(app, "get_data", side_effect=[
+        (first / "audio.wav", [first / "image_001.png"]),
+        (second / "audio.wav", [second / "image_001.png"]),
+    ]), patch.object(app, "ImageProcessor") as processor, \
+         redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+        processor.return_value.process_data.side_effect = analyze
+        assert app.main(flags) == 0
+        assert first.exists()
+        assert app.main(flags) == 0
+    assert first.exists() == keep_all
+    assert (second / "image_001.png").exists()
+    assert standalone.exists()
+    assert outside.exists()
+
+
+def test_failed_capture_preserves_last_window_and_failed_analysis_retains_new_media(tmp_path):
+    first = tmp_path / "capture-first"
+    first.mkdir()
+    audio = first / "audio.wav"
+    audio.touch()
+    with patch.object(app, "get_data", return_value=(audio, [])), patch.object(app, "ImageProcessor") as processor, \
+         redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+        processor.return_value.process_data.return_value = dict(RESULT)
+        assert app.main(["--once"]) == 0
+    with patch.object(app, "get_data", side_effect=RuntimeError("capture failed")), patch.object(app, "ImageProcessor"), \
+         redirect_stderr(io.StringIO()):
+        assert app.main(["--once"]) == 1
+    assert audio.exists()
+    second = tmp_path / "capture-second"
+    second.mkdir()
+    next_audio = second / "audio.wav"
+    next_audio.touch()
+    with patch.object(app, "get_data", return_value=(next_audio, [])), patch.object(app, "ImageProcessor") as processor, \
+         redirect_stderr(io.StringIO()):
+        processor.return_value.process_data.side_effect = RuntimeError("analysis failed")
+        assert app.main(["--once"]) == 1
+    assert next_audio.exists()
+    assert not first.exists()
 
 
 def test_recurring_runner_keeps_collecting_after_failed_upload(tmp_path):
