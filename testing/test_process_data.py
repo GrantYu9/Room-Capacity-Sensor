@@ -5,8 +5,8 @@ import pytest
 from src.process_data import EnumType, Processor
 
 class TestProcessor:
-    _ROOT = Path(__file__).parent.parent
-    _DATA_TESTING = _ROOT / "data" / "testing"
+    _ROOT: Path = Path(__file__).parent.parent
+    _DATA_TESTING: Path = _ROOT / "data" / "testing"
 
 
     @pytest.fixture
